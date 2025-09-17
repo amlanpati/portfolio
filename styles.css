@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Boldonse&family=Oswald:wght@200..700&family=Poppins&display=swap');
+@property --radius {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 100px;
+}
+
 body {
     margin: 0;
     font-family: 'Arial', sans-serif;
@@ -12,8 +19,8 @@ body {
     padding: 1rem 3rem;
     align-items: center;
     position: fixed;
-    width: 100%;
-    background: rgba(0,0,0,0.8);
+    width: 95vw;
+    background: rgba(28, 28, 28, 0.7);
     z-index: 10;
 }
 
@@ -40,6 +47,14 @@ body {
     font-size: 1.1rem;
     cursor: pointer;
     position: relative;
+    padding: 0.5rem 1rem;
+    transition: background 0.3s ease, border-radius 0.3s ease;
+}
+
+.nav-links a:hover {
+    background-color: rgba(255, 255, 255, 0.7);
+    color: #000000;
+    border-radius: 8px;
 }
 
 .hero {
@@ -48,6 +63,21 @@ body {
     height: 100vh;
     overflow: hidden;
     cursor: none;
+}
+
+.custom-cursor {
+    position: absolute;
+    width: 32px; 
+    height: 32px;  
+    background-image: url('./assets/view-icon.png');
+    background-size: contain;
+    pointer-events: none; 
+    left: var(--x); 
+    top: var(--y);
+    transform: translate(-50%, -50%); 
+    opacity: 1;
+    transition: transform 0.1s ease-out, opacity 0.3s ease;
+    z-index: 1000;
 }
 
 .hero-image {
@@ -65,45 +95,50 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: url('your-second-photo.jpg') no-repeat center center;
+    background: url('./assets/my-second-photo.jpg') no-repeat center center;
     background-size: cover;
-    mask-image: radial-gradient(circle 100px at var(--x) var(--y), transparent 100%, black 100%);
-    -webkit-mask-image: radial-gradient(circle 100px at var(--x) var(--y), transparent 100%, black 100%);
+    mask-image: radial-gradient(circle var(--radius, 200px) at var(--x) var(--y), transparent 100%, black 100%);
+    -webkit-mask-image: radial-gradient(circle var(--radius, 200px) at var(--x) var(--y), transparent 100%, black 100%);
     pointer-events: none;
     transition: none;
-    animation: pulse 2s infinite ease-in-out;
+    animation: pulse 4s infinite ease-in-out;
+    opacity: 1;
+    transition: opacity 0.3s ease;
 }
 
 @keyframes pulse {
     0%, 100% {
-        --radius: 200px;
+        --radius: 100px;
     }
     50% {
-        --radius: 250px;
+        --radius: 150px;
     }
 }
 
 .hero-text {
     position: absolute;
-    top: 50%;
+    top: 70%;
     left: 50%;
     transform: translate(-50%, -50%);
     color: white;
     text-align: center;
     z-index: 5;
-    text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+    text-shadow: 3px 3px 8px rgba(0,0,0,0.8);
 }
 
 .hero-text h1 {
-    font-size: 3rem;
+    font-size: 2.8rem;
     margin: 0;
-    font-weight: bold;
+    font-family: "Oswald", sans-serif;
+    font-weight: 700;
 }
 
 .hero-text h2 {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     margin: 0;
-    font-weight: normal;
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-size: 1.6rem;
 }
 
 .hover-anim {
@@ -111,12 +146,21 @@ body {
     position: relative;
 }
 
-.navbar {
-    position: fixed;
-    width: 100%;
+.hero-bottom-info {
+    position: absolute;
+    bottom: 2rem;
+    width: 95vw;
     display: flex;
     justify-content: space-between;
-    padding: 1rem 3rem;
-    background: rgba(0, 0, 0, 0.8);
-    z-index: 10;
+    align-items: center;
+    padding: 0 3rem;
+    color: #fff;
+    font-family: monospace;
+    font-size: larger;
 }
+
+.hero-bottom-info p {
+    text-align: center;
+    max-width: 500px;
+}
+
