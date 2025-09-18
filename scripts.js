@@ -1,168 +1,152 @@
-const revealLayer = document.querySelector('.reveal-layer');
-const customCursor = document.querySelector('.custom-cursor'); 
-const heroSection = document.querySelector('.hero');
-const navbar = document.querySelector('.navbar');
+document.addEventListener('DOMContentLoaded', () => {
 
-// Add the event listener to the entire document, not just the hero section
-document.addEventListener('mousemove', e => {
-    // Get the positions of the navbar and hero sections on the page
-    const navbarRect = navbar.getBoundingClientRect();
-    const heroRect = heroSection.getBoundingClientRect();
+    // --- 1. Preloader Logic (with minimum display time) ---
+    let assetsLoaded = false;
+    let minTimePassed = false;
 
-    // Condition 1: Is the mouse inside the navbar region?
-    if (e.clientY <= navbarRect.bottom) {
-        // If yes, hide the custom elements. The browser's default cursor takes over.
-        revealLayer.style.opacity = '0';
-        customCursor.style.opacity = '0';
-    } 
-    // Condition 2: If not in the navbar, is the mouse inside the hero region?
-    else if (
-        e.clientX >= heroRect.left &&
-        e.clientX <= heroRect.right &&
-        e.clientY >= heroRect.top &&
-        e.clientY <= heroRect.bottom
-    ) {
-        // If yes, show the custom elements and update their position.
-        revealLayer.style.opacity = '1';
-        customCursor.style.opacity = '1';
-
-        const x = e.clientX - heroRect.left;
-        const y = e.clientY - heroRect.top;
-
-        heroSection.style.setProperty('--x', `${x}px`);
-        heroSection.style.setProperty('--y', `${y}px`);
-    }
-    // Condition 3: If the mouse is anywhere else on the page (not navbar, not hero)
-    else {
-        // Also hide the custom elements.
-        revealLayer.style.opacity = '0';
-        customCursor.style.opacity = '0';
-    }
-});
-
-document.addEventListener('mouseleave', () => {
-    // Hide the custom elements when the mouse leaves the window
-    revealLayer.style.opacity = '0';
-    customCursor.style.opacity = '0';
-});
-
-// Nav link hover animation
-document.querySelectorAll('.hover-anim').forEach(link => {
-    const originalText = link.textContent;
-    let animationInterval = null;
-    const letters = "abcdefghijklmnopqrstuvwxyz";
-
-    // Event for when the mouse enters the link area
-    link.addEventListener('mouseenter', () => {
-        // ADD THIS LINE to stop the animation on mobile
-        if (window.innerWidth <= 1024) return;
-
-        let iterations = 0;
-        
-        if (animationInterval) {
-            clearInterval(animationInterval);
+    // This event fires when all assets are fully loaded
+    window.addEventListener('load', () => {
+        assetsLoaded = true;
+        if (minTimePassed) {
+            document.body.classList.add('loaded');
+            removePreloader();
         }
+    });
 
-        animationInterval = setInterval(() => {
-            // Determine the single random character to "glitch" in the unrevealed part
-            const unrevealedStartIndex = Math.floor(iterations);
-            const randomIndexToScramble = unrevealedStartIndex + Math.floor(Math.random() * (originalText.length - unrevealedStartIndex));
+    // Set a minimum timer
+    setTimeout(() => {
+        minTimePassed = true;
+        if (assetsLoaded) {
+            document.body.classList.add('loaded');
+            removePreloader();
+        }
+    }, 2000); // Minimum load time: 2 seconds. Adjust as needed.
 
-            link.textContent = originalText
-                .split('')
-                .map((letter, index) => {
-                    // 1. Reveal letters that are "unlocked"
-                    if (index < iterations) {
+    function removePreloader() {
+        const preloader = document.getElementById('preloader');
+        if (preloader) {
+            // Set a timer to remove the preloader from the DOM after all animations are done
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 4500); // This time should be the total duration of your animations
+        }
+    }
+
+    // --- 2. Cursor and Reveal Effect Logic ---
+    const revealLayer = document.querySelector('.reveal-layer');
+    const customCursor = document.querySelector('.custom-cursor');
+    const heroSection = document.querySelector('.hero');
+    const navbar = document.querySelector('.navbar');
+
+    if (revealLayer && customCursor && heroSection && navbar) {
+        document.addEventListener('mousemove', e => {
+            const navbarRect = navbar.getBoundingClientRect();
+            const heroRect = heroSection.getBoundingClientRect();
+
+            if (e.clientY <= navbarRect.bottom) {
+                revealLayer.style.opacity = '0';
+                customCursor.style.opacity = '0';
+            } else if (
+                e.clientX >= heroRect.left && e.clientX <= heroRect.right &&
+                e.clientY >= heroRect.top && e.clientY <= heroRect.bottom
+            ) {
+                revealLayer.style.opacity = '1';
+                customCursor.style.opacity = '1';
+                const x = e.clientX - heroRect.left;
+                const y = e.clientY - heroRect.top;
+                heroSection.style.setProperty('--x', `${x}px`);
+                heroSection.style.setProperty('--y', `${y}px`);
+            } else {
+                revealLayer.style.opacity = '0';
+                customCursor.style.opacity = '0';
+            }
+        });
+
+        document.addEventListener('mouseleave', () => {
+            revealLayer.style.opacity = '0';
+            customCursor.style.opacity = '0';
+        });
+    }
+
+
+    // --- 3. Nav Link Hover Animation ---
+    document.querySelectorAll('.hover-anim').forEach(link => {
+        const originalText = link.textContent;
+        let animationInterval = null;
+        const letters = "abcdefghijklmnopqrstuvwxyz";
+
+        link.addEventListener('mouseenter', () => {
+            if (window.innerWidth <= 1024) return;
+            let iterations = 0;
+            if (animationInterval) clearInterval(animationInterval);
+
+            animationInterval = setInterval(() => {
+                link.textContent = originalText.split('')
+                    .map((letter, index) => {
+                        if (index < iterations) return originalText[index];
+                        if (index === (Math.floor(iterations) + Math.floor(Math.random() * (originalText.length - Math.floor(iterations))))) return letters[Math.floor(Math.random() * 26)];
                         return originalText[index];
-                    }
-                    // 2. "Glitch" a single random letter in the remaining part
-                    if (index === randomIndexToScramble) {
-                        return letters[Math.floor(Math.random() * 26)];
-                    }
-                    // 3. For all other letters, keep them as they are
-                    return originalText[index];
-                })
-                .join('');
+                    })
+                    .join('');
+                if (iterations >= originalText.length) {
+                    clearInterval(animationInterval);
+                    animationInterval = null;
+                    link.textContent = originalText;
+                }
+                iterations += 0.5;
+            }, 40);
+        });
 
-            // Stop the animation when the entire word is revealed
-            if (iterations >= originalText.length) {
+        link.addEventListener('mouseleave', () => {
+            if (animationInterval) {
                 clearInterval(animationInterval);
                 animationInterval = null;
-                link.textContent = originalText; // Ensure final text is correct
             }
-
-            // Increase the speed of the reveal (a new letter is revealed every 2 frames)
-            iterations += 0.5; 
-        }, 40); // Interval set to 40ms for a smooth feel
+            link.textContent = originalText;
+        });
     });
 
-    // Event for when the mouse leaves the link area
-    link.addEventListener('mouseleave', () => {
-        if (animationInterval) {
-            clearInterval(animationInterval);
-            animationInterval = null;
-        }
-        // Immediately restore the original text
-        link.textContent = originalText;
-    });
-});
 
-// --- Theme Toggle & Responsive State Logic ---
-document.addEventListener('DOMContentLoaded', () => {
-    // --- Setup ---
+    // --- 4. Theme Toggle & Responsive State Logic ---
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
     const heroImage = document.getElementById('hero-img');
     const body = document.body;
 
-    // --- Image Paths ---
-    const darkImage = './assets/my-second-photo.jpg'; // Normal pic (for mobile dark theme)
-    // FIX #1: Corrected filename to match your HTML
-    const lightImage = './assets/my-photo.jpg';       // Smiling pic (for mobile light theme AND desktop default)
+    if (themeToggleBtn && heroImage && body) {
+        const darkImage = './assets/my-second-photo.jpg';
+        const lightImage = './assets/my-photo.jpg';
 
-    // --- Functions ---
-    const applyTheme = (isLight) => {
-        if (isLight) {
-            body.classList.add('light-mode');
-            if (heroImage) heroImage.src = lightImage;
-        } else {
-            body.classList.remove('light-mode');
-            if (heroImage) heroImage.src = darkImage;
-        }
-    };
-
-    // FIX #2: Create a handler that manages state based on window size
-    const handleResponsiveState = () => {
-        if (window.innerWidth <= 1024) {
-            // MOBILE VIEW: Check localStorage and apply the correct theme
-            const savedTheme = localStorage.getItem('theme');
-            applyTheme(savedTheme === 'light');
-        } else {
-            // DESKTOP VIEW: Always reset the hero image to the default state
-            if (heroImage) {
-                heroImage.src = lightImage; // Reset to the smiling photo for the cursor effect
+        const applyTheme = (isLight) => {
+            if (isLight) {
+                body.classList.add('light-mode');
+                heroImage.src = lightImage;
+            } else {
+                body.classList.remove('light-mode');
+                heroImage.src = darkImage;
             }
-        }
-    };
+        };
 
-    // --- Event Listeners ---
-    // Listener for the theme button click
-    if (themeToggleBtn) {
+        const handleResponsiveState = () => {
+            if (window.innerWidth <= 1024) {
+                const savedTheme = localStorage.getItem('theme');
+                applyTheme(savedTheme === 'light');
+            } else {
+                heroImage.src = darkImage;
+            }
+        };
+
         themeToggleBtn.addEventListener('click', () => {
             const isLight = !body.classList.contains('light-mode');
             applyTheme(isLight);
             localStorage.setItem('theme', isLight ? 'light' : 'dark');
         });
+
+        window.addEventListener('resize', handleResponsiveState);
+        handleResponsiveState();
     }
 
-    // Listener for window resize events to switch between states
-    window.addEventListener('resize', handleResponsiveState);
 
-    // Initial check when the page loads
-    handleResponsiveState();
-});
-
-// --- Mobile Navigation Logic ---
-document.addEventListener('DOMContentLoaded', () => {
+    // --- 5. Mobile Navigation Logic ---
     const hamburgerBtn = document.getElementById('hamburger-btn');
     const navLinksList = document.getElementById('nav-links-list');
 
@@ -171,4 +155,5 @@ document.addEventListener('DOMContentLoaded', () => {
             navLinksList.classList.toggle('active');
         });
     }
+
 });
