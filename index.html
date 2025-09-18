@@ -14,31 +14,48 @@
             <span class="logo-straight">Amlan</span>
             <span class="logo-cursive">Pati</span>
         </div>
-        <ul class="nav-links">
-            <li><a href="#about" class="hover-anim">About</a></li>
-            <li><a href="#timeline" class="hover-anim">Timeline</a></li>
-            <li><a href="#works" class="hover-anim">Works</a></li>
-            <li><a href="#contact" class="hover-anim">Contact</a></li>
-        </ul>
+
+        <div class="nav-right">
+            <ul class="nav-links" id="nav-links-list">
+                <li><a href="#about" class="hover-anim">About</a></li>
+                <li><a href="#timeline" class="hover-anim">Timeline</a></li>
+                <li><a href="#works" class="hover-anim">Works</a></li>
+                <li><a href="#contact" class="hover-anim">Contact</a></li>
+            </ul>
+
+            <button id="theme-toggle-btn" aria-label="Toggle theme">
+                <svg xmlns="http://www.w3.org/org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+            <button id="hamburger-btn" aria-label="Open navigation menu">
+                <svg xmlns="http://www.w3.org/org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+        </div>
     </nav>
 
     <section class="hero">
-        
-        <img src="./assets/my-photo.jpg" alt="Amlan Pati" class="hero-image" />
+
+        <img src="./assets/my-photo.jpg" alt="Amlan Pati" class="hero-image" id="hero-img" />
         <div class="reveal-layer"></div>
         <div class="hero-text">
             <h1>I BUILD THE QUIET SPACE-</h1>
             <h2>WHERE FUNCTION AND BEAUTY MEET.</h2>
         </div>
         <div class="hero-bottom-info">
-            <span>Developer</span>
+            <span>UI UX Designer</span>
             <p>I design and develop apps that do more than look good – they tell stories, evoke emotions, and feel
                 alive.</p>
             <span>Software Engineer</span>
         </div>
         <div class="custom-cursor"></div>
     </section>
-    </div>
     <script src="./scripts.js"></script>
 </body>
 

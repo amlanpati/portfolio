@@ -1,8 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Boldonse&family=Oswald:wght@200..700&family=Poppins&display=swap');
+
 @property --radius {
-  syntax: '<length>';
-  inherits: false;
-  initial-value: 100px;
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 100px;
 }
 
 body {
@@ -19,9 +20,10 @@ body {
     padding: 1rem 3rem;
     align-items: center;
     position: fixed;
-    width: 95vw;
+    width: 100vw;
     background: rgba(28, 28, 28, 0.7);
     z-index: 10;
+    box-sizing: border-box;
 }
 
 .logo-straight {
@@ -67,14 +69,14 @@ body {
 
 .custom-cursor {
     position: absolute;
-    width: 32px; 
-    height: 32px;  
+    width: 32px;
+    height: 32px;
     background-image: url('./assets/view-icon.png');
     background-size: contain;
-    pointer-events: none; 
-    left: var(--x); 
+    pointer-events: none;
+    left: var(--x);
     top: var(--y);
-    transform: translate(-50%, -50%); 
+    transform: translate(-50%, -50%);
     opacity: 1;
     transition: transform 0.1s ease-out, opacity 0.3s ease;
     z-index: 1000;
@@ -107,9 +109,12 @@ body {
 }
 
 @keyframes pulse {
-    0%, 100% {
+
+    0%,
+    100% {
         --radius: 100px;
     }
+
     50% {
         --radius: 150px;
     }
@@ -123,7 +128,7 @@ body {
     color: white;
     text-align: center;
     z-index: 5;
-    text-shadow: 3px 3px 8px rgba(0,0,0,0.8);
+    text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.8);
 }
 
 .hero-text h1 {
@@ -164,3 +169,126 @@ body {
     max-width: 500px;
 }
 
+#theme-toggle-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: none;
+}
+
+#theme-toggle-btn svg {
+    pointer-events: none;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+#hamburger-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: none;
+    z-index: 1001;
+}
+
+/* --- Media Query for Mobile & Tablets --- */
+/* This applies to screens 1024px wide or smaller */
+@media (max-width: 1024px) {
+
+    .reveal-layer,
+    .custom-cursor {
+        display: none;
+    }
+
+    #theme-toggle-btn {
+        display: block;
+    }
+
+    .hero {
+        cursor: auto;
+    }
+
+    .hero-text {
+        width: 90%;
+        top: 60%;
+    }
+
+    .hero-text h1 {
+        font-size: 2rem;
+    }
+
+    .hero-text h2 {
+        font-size: 1.2rem;
+    }
+
+    .hero-bottom-info {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+        bottom: 1rem;
+        width: 100%;
+        padding: 0 1rem;
+        box-sizing: border-box;
+    }
+
+    .hero-bottom-info p {
+        max-width: 90%;
+    }
+
+    #hamburger-btn {
+        display: block;
+    }
+
+    .navbar {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .nav-links {
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        background-color: #1A1A1A;
+
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-in-out;
+        padding-left: 0;
+    }
+
+    .nav-links.active {
+        max-height: 300px;
+    }
+
+    .nav-links li {
+        width: 100%;
+        text-align: center;
+    }
+
+    .nav-links a {
+        padding: 1rem 0;
+        display: block;
+        width: 100%;
+    }
+
+    .nav-links a:hover {
+        background-color: transparent;
+        color: #fff;
+    }
+
+    .nav-links a:active {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+}

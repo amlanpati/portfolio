@@ -54,6 +54,9 @@ document.querySelectorAll('.hover-anim').forEach(link => {
 
     // Event for when the mouse enters the link area
     link.addEventListener('mouseenter', () => {
+        // ADD THIS LINE to stop the animation on mobile
+        if (window.innerWidth <= 1024) return;
+
         let iterations = 0;
         
         if (animationInterval) {
@@ -102,4 +105,70 @@ document.querySelectorAll('.hover-anim').forEach(link => {
         // Immediately restore the original text
         link.textContent = originalText;
     });
+});
+
+// --- Theme Toggle & Responsive State Logic ---
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Setup ---
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    const heroImage = document.getElementById('hero-img');
+    const body = document.body;
+
+    // --- Image Paths ---
+    const darkImage = './assets/my-second-photo.jpg'; // Normal pic (for mobile dark theme)
+    // FIX #1: Corrected filename to match your HTML
+    const lightImage = './assets/my-photo.jpg';       // Smiling pic (for mobile light theme AND desktop default)
+
+    // --- Functions ---
+    const applyTheme = (isLight) => {
+        if (isLight) {
+            body.classList.add('light-mode');
+            if (heroImage) heroImage.src = lightImage;
+        } else {
+            body.classList.remove('light-mode');
+            if (heroImage) heroImage.src = darkImage;
+        }
+    };
+
+    // FIX #2: Create a handler that manages state based on window size
+    const handleResponsiveState = () => {
+        if (window.innerWidth <= 1024) {
+            // MOBILE VIEW: Check localStorage and apply the correct theme
+            const savedTheme = localStorage.getItem('theme');
+            applyTheme(savedTheme === 'light');
+        } else {
+            // DESKTOP VIEW: Always reset the hero image to the default state
+            if (heroImage) {
+                heroImage.src = lightImage; // Reset to the smiling photo for the cursor effect
+            }
+        }
+    };
+
+    // --- Event Listeners ---
+    // Listener for the theme button click
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            const isLight = !body.classList.contains('light-mode');
+            applyTheme(isLight);
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        });
+    }
+
+    // Listener for window resize events to switch between states
+    window.addEventListener('resize', handleResponsiveState);
+
+    // Initial check when the page loads
+    handleResponsiveState();
+});
+
+// --- Mobile Navigation Logic ---
+document.addEventListener('DOMContentLoaded', () => {
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const navLinksList = document.getElementById('nav-links-list');
+
+    if (hamburgerBtn && navLinksList) {
+        hamburgerBtn.addEventListener('click', () => {
+            navLinksList.classList.toggle('active');
+        });
+    }
 });
