@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // This event fires when all assets are fully loaded
     window.addEventListener('load', () => {
+        window.scrollTo(0, 0);
         assetsLoaded = true;
         if (minTimePassed) {
             document.body.classList.add('loaded');
@@ -28,7 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Set a timer to remove the preloader from the DOM after all animations are done
             setTimeout(() => {
                 preloader.style.display = 'none';
-            }, 4500); // This time should be the total duration of your animations
+                document.body.style.overflow = 'auto'; // Re-enable scrolling
+            }, 2500); // This time should be the total duration of your animations
         }
     }
 
@@ -155,5 +157,140 @@ document.addEventListener('DOMContentLoaded', () => {
             navLinksList.classList.toggle('active');
         });
     }
+
+    // --- 6. On-Scroll Animation Logic ---
+    const animatedElements = document.querySelectorAll('.animate-on-scroll');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                // Optional: stop observing the element after it has animated in
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.1 // Trigger when 10% of the element is visible
+    });
+
+    animatedElements.forEach(element => {
+        observer.observe(element);
+    });
+
+    // --- 7. Works Section Scroll Animation (Sticky Header) ---
+    const worksHeader = document.querySelector('.works-title');
+    if (worksHeader) {
+        let lastScrollY = window.scrollY;
+
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            const worksSectionTop = worksHeader.getBoundingClientRect().top + window.scrollY;
+            const headerHeight = worksHeader.offsetHeight;
+
+            // Only apply transform if we are within the 'works' section scroll area
+            if (currentScrollY > (worksSectionTop - window.innerHeight) && currentScrollY < (worksSectionTop + worksHeader.parentElement.offsetHeight - headerHeight)) {
+                let transformValue = 0;
+                const scrollDistance = currentScrollY - worksSectionTop;
+
+                if (currentScrollY > lastScrollY) {
+                    // Scrolling down: move right
+                    transformValue = Math.min(scrollDistance * 0.3, window.innerWidth * 0.15); // Adjust multiplier for speed
+                } else {
+                    // Scrolling up: move left
+                    transformValue = Math.max(scrollDistance * 0.3, -window.innerWidth * 0.15); // Adjust multiplier for speed
+                }
+                worksHeader.style.transform = `translateX(${transformValue}px)`;
+            } else {
+                worksHeader.style.transform = `translateX(0px)`; // Reset if outside section
+            }
+
+            lastScrollY = currentScrollY;
+        });
+    }
+
+    // --- 8. Works Section: 3D Tilt & Image Carousel Logic ---
+    document.querySelectorAll('.product-showcase').forEach(showcase => {
+        const image3DWrapper = showcase.querySelector('.image-3d-wrapper');
+
+        // --- Part A: 3D Tilt Effect on Image Wrapper ---
+        if (image3DWrapper) {
+            showcase.addEventListener('mousemove', (e) => {
+                const rect = showcase.getBoundingClientRect();
+                // Calculate mouse position relative to the center of the showcase, not just the image
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                // Invert rotation for a more natural feel
+                const rotateX = ((y - centerY) / centerY) * -7; // Max rotation
+                const rotateY = ((x - centerX) / centerX) * 7;  // Max rotation
+
+                image3DWrapper.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+            });
+
+            showcase.addEventListener('mouseleave', () => {
+                // Reset to default state
+                image3DWrapper.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            });
+        }
+
+        // --- Part B: Inner Image Carousel for Web App ---
+        const webImages = showcase.querySelectorAll('.web-app-wrapper img');
+        if (webImages.length > 1) {
+            const imageNav = showcase.querySelector('.image-nav');
+            const dotsContainer = imageNav.querySelector('.image-dots');
+            const prevBtn = imageNav.querySelector('.image-prev');
+            const nextBtn = imageNav.querySelector('.image-next');
+            let currentImageIndex = 0;
+
+            function showImage(index) {
+                webImages.forEach((img, i) => {
+                    img.classList.toggle('hidden', i !== index);
+                });
+                dotsContainer.querySelectorAll('.dot').forEach((dot, i) => {
+                    dot.classList.toggle('active', i === index);
+                });
+            }
+
+            nextBtn.addEventListener('click', () => {
+                currentImageIndex = (currentImageIndex + 1) % webImages.length;
+                showImage(currentImageIndex);
+            });
+
+            prevBtn.addEventListener('click', () => {
+                currentImageIndex = (currentImageIndex - 1 + webImages.length) % webImages.length;
+                showImage(currentImageIndex);
+            });
+
+            dotsContainer.querySelectorAll('.dot').forEach(dot => {
+                dot.addEventListener('click', () => {
+                    currentImageIndex = parseInt(dot.dataset.imageIndex);
+                    showImage(currentImageIndex);
+                });
+            });
+        }
+    });
+
+    // --- 9. Live Clock in Footer ---
+    const timeElement = document.getElementById('current-time');
+
+    function updateTime() {
+        if (timeElement) {
+            // Options to format time for India (IST)
+            const options = {
+                timeZone: 'Asia/Kolkata',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            };
+            const currentTime = new Date().toLocaleTimeString('en-US', options) + " IST";
+            timeElement.textContent = currentTime;
+        }
+    }
+
+    updateTime(); // Call it once immediately
+    setInterval(updateTime, 1000); // And then update it every second
+
 
 });
